@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estante de Mistério</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f1; --surface: #ffffff; --surface-2: #f1eee8; --text: #1f1d1a; --muted: #77716a; --faint: #a49e96;
+    --line: #e7e2da; --accent: #8c3b34; --accent-soft: #f4e6e2;
+    --shadow-sm: 0 1px 2px rgba(31,29,26,.05);
+    --shadow: 0 1px 2px rgba(31,29,26,.04), 0 8px 24px -8px rgba(31,29,26,.12);
+    --shadow-lg: 0 24px 64px -16px rgba(31,29,26,.28);
+    --ui: "Inter", system-ui, "Segoe UI", sans-serif;
+    --serif: "Literata", Georgia, "Iowan Old Style", serif;
+    --leitura: var(--serif); --tam: 19px; --entrelinha: 1.75; --largura: 36rem;
+    color-scheme: light;
+  }
+  :root[data-tema="sepia"] {
+    --bg: #f3ead9; --surface: #f9f2e4; --surface-2: #ece1cc; --text: #3d3021; --muted: #7f6c55; --faint: #a8957b;
+    --line: #e2d4bb; --accent: #8a4a2c; --accent-soft: #ecdcc5;
+  }
+  :root[data-tema="escuro"] {
+    --bg: #15161a; --surface: #1d1f24; --surface-2: #24272d; --text: #e6e2dc; --muted: #9b968e; --faint: #6f6b65;
+    --line: #2d3036; --accent: #e3998a; --accent-soft: #3a2724;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -8px rgba(0,0,0,.5);
+    --shadow-lg: 0 24px 64px -16px rgba(0,0,0,.7);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 var(--ui); -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  svg { display: block; }
+
+  .botao { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; font-weight: 500; transition: background .15s, transform .1s, box-shadow .15s; white-space: nowrap; }
+  .botao:active { transform: scale(.98); }
+  .botao.primario { background: var(--text); color: var(--bg); }
+  .botao.primario:hover { box-shadow: 0 6px 16px -6px rgba(0,0,0,.4); }
+  .botao.secundario { background: var(--surface-2); }
+  .botao.secundario:hover { background: var(--line); }
+  .icone { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--muted); transition: background .15s, color .15s; }
+  .icone:hover { background: var(--surface-2); color: var(--text); }
+
+  /* ------------------------------------------------ cabeçalho */
+  .topo { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+  .topo.rolou { border-bottom-color: var(--line); }
+  .topo-dentro { max-width: 1240px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; gap: 20px; }
+  .marca { display: flex; align-items: center; gap: 10px; font: 600 17px/1 var(--serif); letter-spacing: -.01em; white-space: nowrap; }
+  .marca .selo { width: 30px; height: 30px; border-radius: 9px; background: var(--text); color: var(--bg); display: grid; place-items: center; }
+  .busca { flex: 1; max-width: 480px; margin-left: auto; position: relative; }
+  .busca svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .busca input { width: 100%; height: 42px; padding: 0 14px 0 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); transition: border-color .15s, box-shadow .15s; }
+  .busca input::placeholder { color: var(--faint); }
+  .busca input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .busca kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font: 500 11px var(--ui); color: var(--faint); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .temas { display: flex; gap: 6px; padding: 4px; border-radius: 999px; background: var(--surface-2); }
+  .tema-btn { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; display: grid; place-items: center; transition: border-color .15s; }
+  .tema-btn span { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+  .tema-btn[aria-pressed=true] { border-color: var(--accent); }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 8px 28px 96px; }
+
+  /* ------------------------------------------------ destaque */
+  .destaque { margin: 24px 0 8px; }
+  .rotulo { font: 600 12px/1 var(--ui); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 16px; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; }
+  .hero-principal { display: flex; gap: 28px; align-items: center; padding: 28px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow); text-align: left; transition: transform .2s, box-shadow .2s; }
+  .hero-principal:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .hero-principal .capa { width: 132px; flex: none; font-size: 13px; }
+  .hero-info { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .hero-info h2 { font: 600 26px/1.2 var(--serif); margin: 0; letter-spacing: -.015em; }
+  .hero-info .autor { color: var(--muted); }
+  .hero-info .trecho { font: italic 15px/1.6 var(--serif); color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin: 4px 0 8px; }
+  .hero-info .linha-progresso { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .barra { height: 4px; border-radius: 4px; background: var(--surface-2); overflow: hidden; flex: 1; max-width: 220px; }
+  .barra i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  .hero-lista { display: flex; flex-direction: column; gap: 10px; }
+  .mini { display: flex; gap: 14px; align-items: center; padding: 12px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-sm); text-align: left; transition: background .15s, transform .15s; }
+  .mini:hover { transform: translateX(2px); background: color-mix(in srgb, var(--surface) 70%, var(--surface-2)); }
+  .mini .capa { width: 46px; flex: none; border-radius: 3px 5px 5px 3px; padding: 0; }
+  .mini .capa > * { display: none; }
+  .mini-info { min-width: 0; flex: 1; }
+  .mini-info strong { display: block; font: 600 15px/1.3 var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-info span { font-size: 13px; color: var(--muted); }
+  .mini .barra { margin-top: 8px; max-width: none; }
+
+  /* ------------------------------------------------ filtros */
+  .barra-filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 44px 0 24px; }
+  .barra-filtros h2 { font: 600 24px/1.2 var(--serif); margin: 0 12px 0 0; letter-spacing: -.01em; }
+  .barra-filtros .contagem { color: var(--muted); font-size: 14px; margin-right: auto; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13.5px; color: var(--muted); transition: all .15s; }
+  .chip:hover { color: var(--text); border-color: color-mix(in srgb, var(--text) 25%, var(--line)); }
+  .chip[aria-pressed=true] { background: var(--text); border-color: var(--text); color: var(--bg); }
+  .separador { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+  .seletor { height: 34px; padding: 0 30px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center; appearance: none; font-size: 13.5px; color: var(--muted); }
+  .alternar { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); cursor: pointer; user-select: none; }
+  .alternar input { appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line); position: relative; cursor: pointer; transition: background .2s; margin: 0; }
+  .alternar input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s; }
+  .alternar input:checked { background: var(--accent); }
+  .alternar input:checked::after { transform: translateX(14px); }
+
+  /* ------------------------------------------------ grade de livros */
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 40px 28px; }
+  .livro { text-align: left; display: flex; flex-direction: column; gap: 12px; animation: surgir .4s both; }
+  .livro .capa { font-size: 17px; transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
+  .livro:hover .capa { transform: translateY(-6px); box-shadow: 0 1px 1px rgba(0,0,0,.08), 0 22px 34px -14px rgba(20,15,10,.55); }
+  .livro-info strong { font: 600 15px/1.3 var(--serif); display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .livro-info .autor { font-size: 13px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .livro-info .meta { font-size: 12px; color: var(--faint); margin-top: 6px; display: flex; gap: 6px; align-items: center; }
+  .livro-info .meta .ponto { width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
+  .livro-info .lido { color: var(--accent); font-weight: 500; }
+  @keyframes surgir { from { opacity: 0; transform: translateY(8px); } }
+
+  /* capa gerada */
+  .capa { --c1: #3c4a5c; --c2: #1f2833; position: relative; aspect-ratio: 2 / 3; border-radius: 4px 10px 10px 4px; overflow: hidden; color: #fff;
+    background: radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, var(--c1) 70%, #fff) 0%, transparent 55%), linear-gradient(160deg, var(--c1), var(--c2));
+    box-shadow: 0 1px 1px rgba(0,0,0,.08), 0 10px 22px -10px rgba(20,15,10,.45);
+    display: flex; flex-direction: column; padding: 1.5em 1.1em 1.25em 1.6em; font-size: 15px; }
+  .capa::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7%; background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 60%, rgba(0,0,0,.08)); }
+  .capa::after { content: ""; position: absolute; inset: 7% 7% 7% 12%; border: 1px solid rgba(255,255,255,.22); border-radius: 2px; pointer-events: none; }
+  .capa-titulo { font: 600 1em/1.18 var(--serif); letter-spacing: -.005em; text-wrap: balance; overflow-wrap: break-word; hyphens: auto; display: -webkit-box; -webkit-line-clamp: 5; line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .ornamento { width: 1.6em; height: 1px; background: rgba(255,255,255,.55); margin: .9em 0; flex: none; }
+  .capa-autor { margin-top: auto; font: 500 .52em/1.3 var(--ui); letter-spacing: .14em; text-transform: uppercase; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .capa.longo-titulo .capa-titulo { font-size: .82em; }
+  .capa-progresso { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(0,0,0,.25); z-index: 1; }
+  .capa-progresso i { display: block; height: 100%; background: #fff; opacity: .9; }
+
+  .vazio { grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--muted); }
+  .vazio strong { display: block; font: 600 20px var(--serif); color: var(--text); margin-bottom: 6px; }
+
+  /* ------------------------------------------------ detalhes (modal) */
+  dialog { border: 0; padding: 0; border-radius: 24px; background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg); width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+  dialog[open] { animation: abrir .28s cubic-bezier(.2,.8,.2,1); }
+  dialog::backdrop { background: rgba(20,18,15,.38); backdrop-filter: blur(6px); }
+  @keyframes abrir { from { opacity: 0; transform: translateY(16px) scale(.98); } }
+  @keyframes fade { from { opacity: 0; } }
+  .detalhe { display: grid; grid-template-columns: 220px 1fr; gap: 32px; padding: 36px; position: relative; }
+  .detalhe .capa { font-size: 22px; box-shadow: 0 20px 40px -16px rgba(20,15,10,.55); }
+  .detalhe .fechar { position: absolute; top: 14px; right: 14px; }
+  .detalhe-info { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .detalhe-info h2 { font: 600 30px/1.15 var(--serif); margin: 4px 32px 0 0; letter-spacing: -.02em; overflow-wrap: anywhere; }
+  .detalhe-info .autor { font-size: 15px; color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .tag { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+  .tag.classico { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+  .citacao { font: italic 15.5px/1.7 var(--serif); color: var(--muted); border-left: 2px solid var(--line); padding-left: 16px; margin: 8px 0 12px; max-height: 8.5em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 60%, transparent); mask-image: linear-gradient(#000 60%, transparent); }
+  .acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
+  .progresso-detalhe { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+
+  /* ------------------------------------------------ leitura */
+  #leitura { position: fixed; inset: 0; overflow: hidden; background: var(--bg); }
+  .palco { position: absolute; top: 84px; bottom: 72px; left: 0; right: 0; display: flex; justify-content: center; gap: 28px; }
+  .pagina-janela { width: var(--col, 36rem); height: 100%; overflow: hidden; flex: none; }
+  .virar { align-self: center; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--faint); flex: none; transition: background .15s, color .15s, opacity .2s; }
+  .virar:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+  .virar:disabled { opacity: 0; cursor: default; }
+  .leitor-base .num-pagina { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .leitor-topo, .leitor-base { position: fixed; left: 0; right: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(14px); transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s; }
+  .leitor-topo { top: 0; border-bottom: 1px solid var(--line); }
+  .leitor-base { bottom: 0; border-top: 1px solid var(--line); }
+  #leitura.imersivo .leitor-topo { transform: translateY(-100%); opacity: 0; }
+  #leitura.imersivo .leitor-base { transform: translateY(100%); opacity: 0; }
+  .leitor-topo-dentro { display: flex; align-items: center; gap: 8px; padding: 10px 16px; max-width: 1240px; margin: 0 auto; }
+  .leitor-titulo { flex: 1; min-width: 0; text-align: center; }
+  .leitor-titulo strong { display: block; font: 600 14.5px/1.3 var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .leitor-titulo span { font-size: 12px; color: var(--muted); }
+  .leitor-base-dentro { display: flex; align-items: center; gap: 16px; padding: 12px 24px; max-width: 1240px; margin: 0 auto; font-size: 12.5px; color: var(--muted); }
+  .leitor-base .capitulo-atual { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .leitor-base .restante { flex: 1; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .progresso-fino { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 30; width: 0; }
+
+  #texto { height: 100%; width: var(--col, 36rem); column-width: var(--col, 36rem); column-gap: var(--gap, 64px); column-fill: auto; transition: transform .42s cubic-bezier(.2,.75,.25,1); will-change: transform; font-family: var(--leitura); font-size: var(--tam); line-height: var(--entrelinha); hyphens: auto; overflow-wrap: break-word; }
+  #texto.sem-animacao { transition: none; }
+  .abertura { text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; break-after: column; }
+  .abertura .sobre { font: 500 12px/1 var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .abertura h1 { font: 600 2.1em/1.15 var(--leitura); letter-spacing: -.02em; margin: .6em 0 .35em; text-wrap: balance; }
+  .abertura .por { font-style: italic; color: var(--muted); }
+  .abertura .regua { width: 40px; height: 1px; background: var(--line); margin: 2.2em auto 0; }
+  #texto p { margin: 0; text-align: justify; text-indent: 1.6em; orphans: 2; widows: 2; }
+  #texto p + p { margin-top: .35em; }
+  #texto h3 + p, #texto .abertura + p, #texto p.sem-recuo { text-indent: 0; }
+  #texto h3 + p::first-letter { font-size: 3.1em; float: left; line-height: .9; padding: .06em .1em 0 0; font-weight: 600; color: var(--accent); }
+  #texto h3 { font: 500 .78em/1.4 var(--ui); letter-spacing: .14em; text-transform: uppercase; text-align: center; color: var(--muted); margin: 1.5em 0 2.2em; break-before: column; break-after: avoid; }
+  #texto h3::before { content: ""; display: block; width: 28px; height: 1px; background: var(--accent); margin: 0 auto 1.4em; opacity: .7; }
+  .fim { text-align: center; padding-top: 3em; color: var(--muted); break-inside: avoid; }
+  .fim .ornamento-fim { font: 400 1.2em var(--leitura); letter-spacing: .6em; color: var(--faint); }
+  #texto .fim p { text-indent: 0; text-align: center; font-style: italic; margin: 1.2em 0 1.6em; }
+  .carregando { display: grid; place-items: center; align-content: center; gap: 16px; height: 100%; color: var(--muted); font: 14px var(--ui); }
+  .spinner { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: girar .8s linear infinite; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+
+  /* painéis do leitor */
+  .painel { position: fixed; z-index: 40; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lg); }
+  #ajustes { top: 62px; right: 16px; width: 300px; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 18px; animation: abrir .2s; }
+  .ajuste-rotulo { font: 600 11px/1 var(--ui); letter-spacing: .09em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+  .segmentado { display: flex; background: var(--surface-2); border-radius: 12px; padding: 3px; gap: 2px; }
+  .segmentado button { flex: 1; height: 34px; border-radius: 9px; font-size: 13px; color: var(--muted); transition: background .15s, color .15s; }
+  .segmentado button[aria-pressed=true] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); font-weight: 500; }
+  .tamanho { display: flex; align-items: center; gap: 12px; }
+  .tamanho input { flex: 1; accent-color: var(--accent); }
+  .tamanho .a-menor { font: 500 13px var(--serif); color: var(--muted); }
+  .tamanho .a-maior { font: 500 20px var(--serif); color: var(--muted); }
+  .temas-grandes { display: flex; gap: 10px; }
+  .temas-grandes button { flex: 1; height: 54px; border-radius: 12px; border: 2px solid transparent; font: 500 15px var(--serif); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); transition: border-color .15s; }
+  .temas-grandes button[aria-pressed=true] { border-color: var(--accent); }
+
+  #sumario { top: 0; right: 0; bottom: 0; width: min(380px, 92vw); border-width: 0 0 0 1px; display: flex; flex-direction: column; animation: deslizar .28s cubic-bezier(.2,.8,.2,1); }
+  @keyframes deslizar { from { transform: translateX(30px); opacity: 0; } }
+  .sumario-topo { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 12px 24px; }
+  .sumario-topo h3 { margin: 0; font: 600 18px var(--serif); }
+  #listaSumario { overflow-y: auto; padding: 0 12px 24px; }
+  #listaSumario button { display: flex; gap: 14px; align-items: baseline; width: 100%; text-align: left; padding: 11px 12px; border-radius: 10px; font: 15px/1.35 var(--serif); color: var(--text); }
+  #listaSumario button:hover { background: var(--surface-2); }
+  #listaSumario button .num { font: 500 12px var(--ui); color: var(--faint); min-width: 1.6em; font-variant-numeric: tabular-nums; }
+  #listaSumario button.atual { background: var(--accent-soft); color: var(--accent); }
+  #listaSumario button.atual .num { color: var(--accent); }
+  .veu { position: fixed; inset: 0; z-index: 35; background: rgba(20,18,15,.28); backdrop-filter: blur(2px); animation: fade .2s; }
+  .veu.transparente { background: transparent; backdrop-filter: none; }
+
+  /* abas */
+  .abas { display: flex; gap: 4px; margin-left: 8px; }
+  .aba { height: 36px; padding: 0 14px; border-radius: 10px; color: var(--muted); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: background .15s, color .15s; white-space: nowrap; }
+  .aba:hover { color: var(--text); background: var(--surface-2); }
+  .aba[aria-current=page] { color: var(--text); background: var(--surface-2); }
+  .contador { font: 600 11px/1 var(--ui); min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--surface); display: inline-grid; place-items: center; }
+  main[data-aba=lendo] > :not(#abaLendo) { display: none !important; }
+  main:not([data-aba=lendo]) > #abaLendo { display: none; }
+  .rotulo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .link { color: var(--accent); font: 500 13px var(--ui); letter-spacing: 0; text-transform: none; }
+  .link:hover { text-decoration: underline; }
+
+  /* aba continuar lendo */
+  .cabecalho-aba { margin: 36px 0 28px; }
+  .cabecalho-aba h2 { font: 600 30px/1.2 var(--serif); margin: 0; letter-spacing: -.015em; }
+  .cabecalho-aba p { color: var(--muted); margin: 6px 0 0; }
+  .lista-lendo { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  .item-lendo { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 16px 20px 16px 16px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-sm); animation: surgir .35s both; transition: box-shadow .2s; }
+  .item-lendo:hover { box-shadow: var(--shadow); }
+  .item-lendo .capa { padding: 0; border-radius: 3px 6px 6px 3px; transition: transform .2s; }
+  .item-lendo .capa > * { display: none; }
+  .item-lendo .capa-btn:hover .capa { transform: translateY(-3px); }
+  .item-info { min-width: 0; }
+  .item-info h3 { font: 600 18px/1.3 var(--serif); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-info .autor { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .item-info .onde { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-top: 12px; }
+  .item-info .onde .barra { min-width: 120px; max-width: 240px; }
+  .item-info .quando { font-size: 12.5px; color: var(--faint); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-info .feito { color: var(--accent); font-weight: 500; }
+  .item-acoes { display: flex; gap: 6px; align-items: center; }
+  .item-lendo.concluido { background: transparent; box-shadow: none; border: 1px solid var(--line); }
+  .vazio-lendo { text-align: center; padding: 72px 20px; border: 1px dashed var(--line); border-radius: 22px; color: var(--muted); }
+  .vazio-lendo strong { display: block; font: 600 22px var(--serif); color: var(--text); margin-bottom: 8px; }
+  .vazio-lendo .botao { margin-top: 20px; }
+  .aviso { display: flex; align-items: center; gap: 16px; }
+  .aviso-acao { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* tradução */
+  .icone.ativo { color: var(--accent); background: var(--accent-soft); }
+  #painelTraducao { top: 62px; right: 16px; width: 320px; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 16px; animation: abrir .2s; }
+  .nota { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 0; }
+  .baixar { display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .baixar .barra { max-width: none; }
+  .baixar .botao { justify-content: center; }
+  .baixar .botao:disabled { opacity: .6; cursor: default; }
+  #texto .pendente { opacity: .38; animation: pulsar 1.6s ease-in-out infinite; }
+  @keyframes pulsar { 50% { opacity: .22; } }
+  #texto .orig { display: block; margin-top: .45em; font-size: .8em; line-height: 1.6; font-style: italic; color: var(--muted); text-indent: 0; text-align: left; }
+  #texto h3 .orig { font: inherit; font-size: .85em; letter-spacing: inherit; margin-top: .5em; color: var(--faint); text-align: center; }
+  #texto.bilingue p { text-indent: 0; text-align: left; }
+  #texto.bilingue p + p { margin-top: 1.3em; }
+  .aviso { position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); z-index: 50; max-width: calc(100vw - 32px); background: var(--text); color: var(--bg); padding: 11px 18px; border-radius: 12px; font-size: 13.5px; box-shadow: var(--shadow-lg); animation: fade .2s; }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .topo-dentro { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+    .busca { order: 3; flex-basis: 100%; max-width: none; }
+    .busca kbd { display: none; }
+    main { padding: 0 16px 80px; }
+    .hero-principal { padding: 20px; gap: 18px; }
+    .hero-principal .capa { width: 96px; }
+    .hero-info h2 { font-size: 21px; }
+    .hero-info .trecho { display: none; }
+    .grade { grid-template-columns: repeat(2, 1fr); gap: 28px 16px; }
+    .detalhe { grid-template-columns: 1fr; padding: 28px 22px; }
+    .detalhe .capa { width: 150px; }
+    .palco { top: 66px; bottom: 54px; }
+    .virar { display: none; }
+    .leitor-base-dentro { padding: 12px 16px; gap: 10px; }
+    .leitor-base .capitulo-atual { display: none; }
+    .leitor-base .num-pagina { flex: 1; }
+    #ajustes, #painelTraducao { left: 12px; right: 12px; width: auto; }
+    .so-largo { display: none; }
+    .abas { order: 2; margin-left: 0; }
+    .marca { flex: 1; }
+    .item-lendo { grid-template-columns: 52px minmax(0, 1fr); gap: 14px 16px; padding: 14px; }
+    .item-acoes { grid-column: 1 / -1; justify-content: flex-end; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ BIBLIOTECA -->
+<div id="biblioteca">
+  <header class="topo" id="topo">
+    <div class="topo-dentro">
+      <div class="marca">
+        <div class="selo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></div>
+        <span class="so-largo">Estante de Mistério</span>
+      </div>
+      <nav class="abas" aria-label="Seções">
+        <button class="aba" data-aba="biblioteca">Biblioteca</button>
+        <button class="aba" data-aba="lendo">Continuar lendo <span class="contador" id="contadorLendo" hidden></span></button>
+      </nav>
+      <label class="busca">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="busca" placeholder="Buscar título ou autor" autocomplete="off" aria-label="Buscar">
+        <kbd>/</kbd>
+      </label>
+      <div class="temas" role="group" aria-label="Tema">
+        <button class="tema-btn" data-tema="claro" title="Claro"><span style="background:#fff"></span></button>
+        <button class="tema-btn" data-tema="sepia" title="Sépia"><span style="background:#f3ead9"></span></button>
+        <button class="tema-btn" data-tema="escuro" title="Escuro"><span style="background:#1d1f24"></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="destaque" id="destaque"></section>
+
+    <div class="barra-filtros">
+      <h2>Biblioteca</h2>
+      <span class="contagem" id="contagem"></span>
+      <div class="chips" id="chipsTipo" role="group" aria-label="Tipo">
+        <button class="chip" data-valor="todos">Todos</button>
+        <button class="chip" data-valor="classicos">Clássicos</button>
+        <button class="chip" data-valor="independentes">Independentes</button>
+      </div>
+      <span class="separador so-largo"></span>
+      <div class="chips" id="chipsDuracao" role="group" aria-label="Duração">
+        <button class="chip" data-valor="qualquer">Qualquer duração</button>
+        <button class="chip" data-valor="curto">Até 30 min</button>
+        <button class="chip" data-valor="medio">30 min – 2 h</button>
+        <button class="chip" data-valor="longo">Mais de 2 h</button>
+      </div>
+      <select class="seletor" id="ordem" aria-label="Ordenar">
+        <option value="titulo">Título A–Z</option>
+        <option value="autor">Autor A–Z</option>
+        <option value="maior">Mais longos</option>
+        <option value="menor">Mais curtos</option>
+      </select>
+      <label class="alternar"><input type="checkbox" id="mostrarTrechos"> Incluir rascunhos</label>
+    </div>
+
+    <div class="grade" id="grade"></div>
+
+    <section id="abaLendo" aria-label="Continuar lendo"></section>
+  </main>
+</div>
+
+<dialog id="detalhe" aria-label="Detalhes do livro"></dialog>
+
+<!-- ============================================================ LEITURA -->
+<div id="leitura" hidden>
+  <div class="progresso-fino" id="progressoFino"></div>
+  <header class="leitor-topo">
+    <div class="leitor-topo-dentro">
+      <button class="icone" id="voltar" title="Voltar à biblioteca (Esc)" aria-label="Voltar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="leitor-titulo"><strong id="leitorTitulo"></strong><span id="leitorAutor"></span></div>
+      <button class="icone" id="abrirSumario" title="Capítulos (C)" aria-label="Capítulos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+      </button>
+      <button class="icone" id="abrirTraducao" title="Tradução (T)" aria-label="Tradução">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h10M8 3v2M5.5 5c.6 3.6 3 6.6 6.5 8.5M10.5 5C9.6 9 7.2 11.8 3.5 13.5M12.5 21l4.25-9 4.25 9M14 18h5.5"/></svg>
+      </button>
+      <button class="icone" id="abrirAjustes" title="Aparência do texto" aria-label="Aparência">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19 8 6l5 13M4.8 14.5h6.4M15 19l3-7.5 3 7.5M15.9 17h4.2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="palco" id="palco">
+    <button class="virar" id="paginaAnterior" aria-label="Página anterior" title="Página anterior (←)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="pagina-janela"><article id="texto"></article></div>
+    <button class="virar" id="paginaProxima" aria-label="Próxima página" title="Próxima página (→)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <footer class="leitor-base">
+    <div class="leitor-base-dentro">
+      <span class="capitulo-atual" id="capituloAtual"></span>
+      <span class="num-pagina" id="numPagina"></span>
+      <span class="restante" id="restante"></span>
+    </div>
+  </footer>
+</div>
+
+<div class="veu" id="veu" hidden></div>
+
+<div class="painel" id="ajustes" hidden role="dialog" aria-label="Aparência do texto">
+  <div>
+    <div class="ajuste-rotulo">Tamanho</div>
+    <div class="tamanho"><span class="a-menor">A</span><input type="range" id="tamanho" min="15" max="28" step="1" aria-label="Tamanho da letra"><span class="a-maior">A</span></div>
+  </div>
+  <div>
+    <div class="ajuste-rotulo">Fonte</div>
+    <div class="segmentado" id="segFonte">
+      <button data-valor="serif" style="font-family:var(--serif)">Literata</button>
+      <button data-valor="georgia" style="font-family:Georgia,serif">Georgia</button>
+      <button data-valor="sans" style="font-family:var(--ui)">Inter</button>
+    </div>
+  </div>
+  <div>
+    <div class="ajuste-rotulo">Espaçamento</div>
+    <div class="segmentado" id="segEntrelinha">
+      <button data-valor="1.5">Compacto</button>
+      <button data-valor="1.75">Normal</button>
+      <button data-valor="2">Amplo</button>
+    </div>
+  </div>
+  <div>
+    <div class="ajuste-rotulo">Largura</div>
+    <div class="segmentado" id="segLargura">
+      <button data-valor="32rem">Estreita</button>
+      <button data-valor="36rem">Média</button>
+      <button data-valor="44rem">Larga</button>
+    </div>
+  </div>
+  <div>
+    <div class="ajuste-rotulo">Tema</div>
+    <div class="temas-grandes">
+      <button data-tema="claro" style="background:#fff;color:#1f1d1a">Aa</button>
+      <button data-tema="sepia" style="background:#f3ead9;color:#3d3021">Aa</button>
+      <button data-tema="escuro" style="background:#1d1f24;color:#e6e2dc">Aa</button>
+    </div>
+  </div>
+</div>
+
+<div class="painel" id="painelTraducao" hidden role="dialog" aria-label="Tradução">
+  <div>
+    <div class="ajuste-rotulo">Idioma do texto</div>
+    <div class="segmentado" id="segIdioma">
+      <button data-valor="original">Original</button>
+      <button data-valor="pt">Português</button>
+      <button data-valor="ambos">Bilíngue</button>
+    </div>
+  </div>
+  <p class="nota">Tradução automática (Google Tradutor), feita conforme você lê. Cada trecho traduzido fica salvo no computador e abre na hora da próxima vez.</p>
+  <div class="baixar">
+    <div class="ajuste-rotulo" style="margin:0">Livro inteiro</div>
+    <div class="progresso-detalhe"><div class="barra"><i id="barraTraducao"></i></div><span id="pctTraducao">0%</span></div>
+    <button class="botao secundario" id="traduzirTudo">Traduzir o livro todo</button>
+  </div>
+</div>
+
+<div class="aviso" id="aviso" hidden role="status"></div>
+
+<nav class="painel" id="sumario" hidden aria-label="Capítulos">
+  <div class="sumario-topo">
+    <h3>Capítulos</h3>
+    <button class="icone" id="fecharSumario" aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div id="listaSumario"></div>
+</nav>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const ler = (k, padrao) => { try { const v = localStorage.getItem(k); return v === null ? padrao : JSON.parse(v); } catch { return padrao; } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+const temaSistema = matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
+const prefs = Object.assign({ tema: temaSistema, tam: 19, fonte: "serif", entrelinha: "1.75", largura: "36rem", idioma: "original" }, ler("prefs", {}));
+if (typeof prefs.tam !== "number" || prefs.tam < 15 || prefs.tam > 28) prefs.tam = 19;
+if (!["serif", "georgia", "sans"].includes(prefs.fonte)) prefs.fonte = "serif";
+const filtros = Object.assign({ tipo: "todos", duracao: "qualquer", ordem: "titulo", rascunhos: false }, ler("filtros", {}));
+const progresso = ler("progresso", {});   // id -> { f: fração lida, t: quando }
+let catalogo = [], porId = {}, livro = null, capitulos = [];
+let originais = [], nos = [], trad = {};   // parágrafos do livro aberto, seus elementos e as traduções (índice -> texto)
+
+const FONTES = { serif: 'var(--serif)', georgia: 'Georgia, "Iowan Old Style", serif', sans: 'var(--ui)' };
+const CLASSICOS = ["conan doyle", "agatha christie", "charles dickens", "dumas", "dostoyevsky", "balzac", "robert barr", "kendrick bangs", "julian hawthorne", "ellen g. white"];
+const PALETA = [
+  ["#5b6b7f", "#2a3340"], ["#7a4b48", "#3b2322"], ["#4f6b5d", "#243329"], ["#6d5a7f", "#2f2639"],
+  ["#8a6f4e", "#3d2f1f"], ["#4d6a73", "#1f3036"], ["#7f5f6b", "#3a2730"], ["#5a6250", "#272b22"],
+  ["#456080", "#1c2a3b"], ["#8b5e4a", "#3e2419"], ["#6b6a85", "#2c2b3d"], ["#3f6460", "#1a2c2a"],
+];
+const PALAVRAS_POR_MIN = 230;
+
+// ---------------------------------------------------------------- utilidades
+function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0; return h; }
+const minutos = palavras => Math.max(1, Math.round(palavras / PALAVRAS_POR_MIN));
+function duracao(palavras) {
+  const m = minutos(palavras);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60), r = m % 60;
+  return r ? `${h} h ${r} min` : `${h} h`;
+}
+const classico = b => CLASSICOS.some(a => b.autor.toLowerCase().includes(a));
+const pct = id => Math.round((progresso[id]?.f || 0) * 100);
+let abaAtual = "biblioteca";
+const relativo = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
+function quando(t) {
+  const s = (Date.now() - t) / 1000;
+  if (s < 60) return "agora mesmo";
+  for (const [lim, div, un] of [[3600, 60, "minute"], [86400, 3600, "hour"], [604800, 86400, "day"], [2629800, 604800, "week"], [31557600, 2629800, "month"]])
+    if (s < lim) return relativo.format(-Math.floor(s / div), un);
+  return relativo.format(-Math.floor(s / 31557600), "year");
+}
+const emAndamento = () => catalogo.filter(b => progresso[b.id] && progresso[b.id].f > 0.005 && progresso[b.id].f < 0.99)
+  .sort((a, b) => progresso[b.id].t - progresso[a.id].t);
+const concluidos = () => catalogo.filter(b => progresso[b.id]?.f >= 0.99).sort((a, b) => progresso[b.id].t - progresso[a.id].t);
+const seta = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+
+function capa(b, { progressoNaCapa = false } = {}) {
+  const [c1, c2] = PALETA[hash(b.titulo + b.autor) % PALETA.length];
+  const p = progresso[b.id];
+  return `<div class="capa${b.titulo.length > 42 ? " longo-titulo" : ""}" style="--c1:${c1};--c2:${c2}">
+    <div class="capa-titulo" dir="auto">${esc(b.titulo)}</div>
+    <div class="ornamento"></div>
+    <div class="capa-autor" dir="auto">${esc(b.autor)}</div>
+    ${progressoNaCapa && p ? `<div class="capa-progresso"><i style="width:${Math.round(p.f * 100)}%"></i></div>` : ""}
+  </div>`;
+}
+
+// ---------------------------------------------------------------- preferências
+function aplicarPrefs() {
+  const raiz = document.documentElement;
+  raiz.dataset.tema = prefs.tema;
+  raiz.style.setProperty("--tam", prefs.tam + "px");
+  raiz.style.setProperty("--leitura", FONTES[prefs.fonte]);
+  raiz.style.setProperty("--entrelinha", prefs.entrelinha);
+  raiz.style.setProperty("--largura", prefs.largura);
+  $$("button[data-tema]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tema === prefs.tema));
+  marcar("#segIdioma", prefs.idioma); marcar("#segFonte", prefs.fonte); marcar("#segEntrelinha", prefs.entrelinha); marcar("#segLargura", prefs.largura);
+  $("#tamanho").value = prefs.tam;
+  guardar("prefs", prefs);
+}
+function marcar(grupo, valor) { $$(grupo + " [data-valor]").forEach(b => b.setAttribute("aria-pressed", b.dataset.valor === String(valor))); }
+
+// ---------------------------------------------------------------- biblioteca
+function desenharDestaque() {
+  const el = $("#destaque");
+  const lendo = emAndamento();
+  const principal = lendo[0] || porId["003"] || catalogo[0];
+  const outros = lendo.length ? lendo.slice(1, 4) : ["008", "021", "027"].map(id => porId[id]).filter(Boolean);
+  el.hidden = !principal || !!$("#busca").value.trim();
+  if (!principal) return;
+  const p = progresso[principal.id];
+  el.innerHTML = `
+    <p class="rotulo">${lendo.length ? `Continuar lendo <button class="link" data-ir-lendo>Ver todos (${lendo.length}) →</button>` : "Sugestões para começar"}</p>
+    <div class="hero">
+      <button class="hero-principal">
+        ${capa(principal)}
+        <div class="hero-info">
+          <h2 dir="auto">${esc(principal.titulo)}</h2>
+          <div class="autor">${esc(principal.autor)}</div>
+          <div class="trecho" dir="auto">${esc(principal.inicio)}</div>
+          ${p ? `<div class="linha-progresso"><div class="barra"><i style="width:${pct(principal.id)}%"></i></div>${p.pag !== undefined ? `Página ${p.pag + 1} de ${p.total}` : pct(principal.id) + "%"} · faltam ${duracao(principal.palavras * (1 - p.f))}</div>` : ""}
+          <div><span class="botao primario">${p ? "Continuar leitura" : "Começar a ler"} ${seta}</span></div>
+        </div>
+      </button>
+      <div class="hero-lista">
+        ${outros.map(b => `
+          <button class="mini" data-id="${b.id}">
+            ${capa(b)}
+            <div class="mini-info">
+              <strong dir="auto">${esc(b.titulo)}</strong>
+              <span>${esc(b.autor)} · ${progresso[b.id] ? pct(b.id) + "% lido" : duracao(b.palavras)}</span>
+              ${progresso[b.id] ? `<div class="barra"><i style="width:${pct(b.id)}%"></i></div>` : ""}
+            </div>
+          </button>`).join("")}
+      </div>
+    </div>`;
+  el.querySelector(".hero-principal").onclick = () => abrir(principal.id);
+  el.querySelector("[data-ir-lendo]")?.addEventListener("click", () => mostrarAba("lendo"));
+  el.querySelectorAll(".mini").forEach(b => b.onclick = () => (lendo.length ? abrir(b.dataset.id) : mostrarDetalhe(b.dataset.id)));
+}
+
+function filtrar() {
+  const termo = $("#busca").value.trim().toLowerCase();
+  const [min, max] = { curto: [0, 30], medio: [30, 120], longo: [120, Infinity], qualquer: [0, Infinity] }[filtros.duracao];
+  const lista = catalogo.filter(b => {
+    if (!filtros.rascunhos && b.palavras < 1500) return false;
+    if (filtros.tipo === "classicos" && !classico(b)) return false;
+    if (filtros.tipo === "independentes" && classico(b)) return false;
+    const m = minutos(b.palavras);
+    if (m < min || m >= max) return false;
+    return !termo || (b.titulo + " " + b.autor).toLowerCase().includes(termo);
+  });
+  const chave = t => t.replace(/^[^\p{L}\p{N}]+/u, "");   // ignora aspas/símbolos no começo
+  const cmp = {
+    titulo: (a, b) => chave(a.titulo).localeCompare(chave(b.titulo), "pt", { sensitivity: "base" }),
+    autor: (a, b) => a.autor.localeCompare(b.autor, "pt", { sensitivity: "base" }) || a.titulo.localeCompare(b.titulo),
+    maior: (a, b) => b.palavras - a.palavras,
+    menor: (a, b) => a.palavras - b.palavras,
+  }[filtros.ordem];
+  return lista.sort(cmp);
+}
+
+function desenharGrade() {
+  const lista = filtrar();
+  $("#contagem").textContent = `${lista.length} ${lista.length === 1 ? "livro" : "livros"}`;
+  if (!lista.length) {
+    $("#grade").innerHTML = `<div class="vazio"><strong>Nada encontrado</strong>Tente outra busca ou remova algum filtro.</div>`;
+    return;
+  }
+  $("#grade").innerHTML = lista.map((b, i) => `
+    <button class="livro" data-id="${b.id}" style="animation-delay:${Math.min(i, 24) * 18}ms">
+      ${capa(b, { progressoNaCapa: true })}
+      <div class="livro-info">
+        <strong dir="auto">${esc(b.titulo)}</strong>
+        <div class="autor">${esc(b.autor)}</div>
+        <div class="meta">${progresso[b.id] ? `<span class="lido">${pct(b.id)}% lido</span><span class="ponto"></span>` : ""}<span>${duracao(b.palavras)}</span></div>
+      </div>
+    </button>`).join("");
+}
+
+function itemLendo(b, i) {
+  const p = progresso[b.id], feito = p.f >= 0.99;
+  return `<article class="item-lendo${feito ? " concluido" : ""}" data-id="${b.id}" style="animation-delay:${Math.min(i, 12) * 30}ms">
+    <button class="capa-btn" data-acao="${feito ? "reler" : "abrir"}" aria-label="Abrir ${esc(b.titulo)}">${capa(b)}</button>
+    <div class="item-info">
+      <h3 dir="auto">${esc(b.titulo)}</h3>
+      <div class="autor">${esc(b.autor)}</div>
+      <div class="onde">${feito
+        ? `<span class="feito">✓ Concluído</span><span>${duracao(b.palavras)} de leitura</span>`
+        : `<div class="barra"><i style="width:${pct(b.id)}%"></i></div><span>${p.pag !== undefined ? `Página ${p.pag + 1} de ${p.total}` : pct(b.id) + "%"} · faltam ${duracao(b.palavras * (1 - p.f))}</span>`}</div>
+      <div class="quando">${p.c && !feito ? `Parou em “${esc(p.c)}” · ` : ""}${feito ? "Terminado" : "Lido"} ${quando(p.t)}</div>
+    </div>
+    <div class="item-acoes">
+      <button class="botao ${feito ? "secundario" : "primario"}" data-acao="${feito ? "reler" : "abrir"}">${feito ? "Ler de novo" : `Continuar ${seta}`}</button>
+      <button class="icone" data-acao="remover" title="Remover da lista" aria-label="Remover da lista">${'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'}</button>
+    </div>
+  </article>`;
+}
+
+function desenharLendo() {
+  const lendo = emAndamento(), feitos = concluidos();
+  $("#contadorLendo").textContent = lendo.length;
+  $("#contadorLendo").hidden = !lendo.length;
+  if (abaAtual !== "lendo") return;
+  const el = $("#abaLendo");
+  const total = lendo.length + feitos.length;
+  el.innerHTML = `
+    <div class="cabecalho-aba">
+      <h2>Continuar lendo</h2>
+      <p>${total ? `${lendo.length} em andamento · ${feitos.length} ${feitos.length === 1 ? "concluído" : "concluídos"}` : "Os livros que você abrir aparecem aqui, no ponto onde parou."}</p>
+    </div>
+    ${!total ? `<div class="vazio-lendo"><strong>Nenhuma leitura ainda</strong>Escolha um livro na biblioteca para começar.<br><button class="botao primario" data-ir="biblioteca">Explorar a biblioteca ${seta}</button></div>` : ""}
+    ${lendo.length ? `<p class="rotulo">Em andamento</p><div class="lista-lendo">${lendo.map(itemLendo).join("")}</div>` : ""}
+    ${feitos.length ? `<p class="rotulo">Concluídos</p><div class="lista-lendo">${feitos.map(itemLendo).join("")}</div>` : ""}`;
+}
+
+$("#abaLendo").addEventListener("click", e => {
+  const alvo = e.target.closest("[data-acao], [data-ir]");
+  if (!alvo) return;
+  if (alvo.dataset.ir) return mostrarAba(alvo.dataset.ir);
+  const id = alvo.closest(".item-lendo").dataset.id, b = porId[id];
+  if (alvo.dataset.acao === "abrir") abrir(id);
+  else if (alvo.dataset.acao === "reler") abrir(id, 0);
+  else if (alvo.dataset.acao === "remover") {
+    const antes = progresso[id];
+    delete progresso[id]; guardar("progresso", progresso); desenharBiblioteca();
+    avisar(`“${b.titulo}” saiu da lista`, { rotulo: "Desfazer", fn: () => { progresso[id] = antes; guardar("progresso", progresso); desenharBiblioteca(); } });
+  }
+});
+
+function mostrarAba(aba, empurrar = true) {
+  abaAtual = aba;
+  $("main").dataset.aba = aba;
+  $$(".aba").forEach(b => b.setAttribute("aria-current", b.dataset.aba === aba ? "page" : "false"));
+  if (empurrar) history.pushState(null, "", location.pathname + (aba === "lendo" ? "#lendo" : ""));
+  desenharBiblioteca();
+  scrollTo(0, 0);
+}
+
+function desenharBiblioteca() {
+  desenharLendo();
+  marcar("#chipsTipo", filtros.tipo); marcar("#chipsDuracao", filtros.duracao);
+  $("#ordem").value = filtros.ordem; $("#mostrarTrechos").checked = filtros.rascunhos;
+  desenharDestaque(); desenharGrade();
+}
+
+function mudarFiltro(chave, valor) { filtros[chave] = valor; guardar("filtros", filtros); desenharBiblioteca(); }
+
+// ---------------------------------------------------------------- detalhes
+function mostrarDetalhe(id) {
+  const b = porId[id]; if (!b) return;
+  const p = progresso[id];
+  const d = $("#detalhe");
+  d.innerHTML = `
+    <div class="detalhe">
+      <button class="icone fechar" aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      ${capa(b)}
+      <div class="detalhe-info">
+        <h2 dir="auto">${esc(b.titulo)}</h2>
+        <div class="autor">${esc(b.autor)}</div>
+        <div class="tags">
+          ${classico(b) ? '<span class="tag classico">Clássico</span>' : '<span class="tag">Autor independente</span>'}
+          <span class="tag">${duracao(b.palavras)} de leitura</span>
+          <span class="tag">${b.palavras.toLocaleString("pt-BR")} palavras</span>
+          ${b.capitulos ? `<span class="tag">${b.capitulos} ${b.capitulos === 1 ? "capítulo" : "capítulos"}</span>` : ""}
+        </div>
+        <div class="citacao" dir="auto">${esc(b.inicio)}…</div>
+        ${p ? `<div class="progresso-detalhe"><div class="barra"><i style="width:${pct(id)}%"></i></div>${pct(id)}% lido</div>` : ""}
+        <div class="acoes">
+          <button class="botao primario" data-acao="ler">${p ? "Continuar leitura" : "Começar a ler"} ${seta}</button>
+          ${p ? '<button class="botao secundario" data-acao="recomecar">Ler do início</button>' : ""}
+        </div>
+      </div>
+    </div>`;
+  d.querySelector(".fechar").onclick = () => d.close();
+  d.querySelector('[data-acao="ler"]').onclick = () => { d.close(); abrir(id); };
+  const rec = d.querySelector('[data-acao="recomecar"]');
+  if (rec) rec.onclick = () => { d.close(); abrir(id, 0); };
+  d.showModal();
+}
+$("#detalhe").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+
+// ---------------------------------------------------------------- leitura (por páginas)
+// O texto é diagramado em colunas do tamanho da tela (CSS multi-column); cada coluna é uma
+// página e virar a página é deslocar o texto uma coluna para o lado.
+let pagina = 0, totalPaginas = 1, passo = 1, timerSalvar;
+
+async function abrir(id, posicao) {
+  livro = porId[id]; if (!livro) return;
+  if (location.hash !== "#livro-" + id) history.pushState(null, "", "#livro-" + id);
+  $("#biblioteca").hidden = true; $("#leitura").hidden = false;
+  $("#leitura").classList.remove("imersivo");
+  $("#leitorTitulo").textContent = livro.titulo;
+  $("#leitorAutor").textContent = livro.autor;
+  document.title = `${livro.titulo} · Estante de Mistério`;
+  $("#texto").style.transform = "";
+  $("#texto").innerHTML = `<div class="carregando"><div class="spinner"></div>Abrindo o livro…</div>`;
+  $("#numPagina").textContent = ""; $("#capituloAtual").textContent = ""; $("#restante").textContent = "";
+
+  pararTraducao();
+  const [dados, salvas] = await Promise.all([
+    fetch(`dados/livros/${id}.json`, { cache: "no-store" }).then(r => r.json()),
+    fetch(`traducoes/${id}.json`, { cache: "no-store" }).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+  ]);
+  if (livro?.id !== id) return;   // o usuário saiu enquanto carregava
+  originais = dados.p; trad = salvas;
+
+  const frag = document.createDocumentFragment();
+  const abertura = document.createElement("header");
+  abertura.className = "abertura";
+  abertura.innerHTML = `<div class="sobre">${classico(livro) ? "Clássico do mistério" : "Estante de Mistério"}</div>
+    <h1 dir="auto">${esc(livro.titulo)}</h1><div class="por">${esc(livro.autor)}</div><div class="regua"></div>`;
+  frag.append(abertura);
+  dados.p.forEach((p, i) => {
+    let el;
+    if (p.startsWith("#")) el = document.createElement("h3");
+    else {
+      el = document.createElement("p");
+      if (p.length < 60 && !/[.!?"”]$/.test(p)) el.className = "sem-recuo";
+    }
+    el.textContent = p.replace(/^#/, "");
+    el.id = "p" + i; el.dir = "auto"; el.dataset.i = i;
+    frag.append(el);
+  });
+  nos = [...frag.querySelectorAll("[data-i]")];
+  const fim = document.createElement("div");
+  fim.className = "fim";
+  fim.innerHTML = `<div class="ornamento-fim">✦ ✦ ✦</div><p>Fim de “${esc(livro.titulo)}”</p><button class="botao secundario" id="fimVoltar">Voltar à biblioteca</button>`;
+  frag.append(fim);
+  $("#texto").replaceChildren(frag);
+  $("#fimVoltar").onclick = () => voltar();
+
+  capitulos = dados.c;
+  $("#abrirSumario").hidden = !capitulos.length;
+  $("#listaSumario").innerHTML = capitulos.map((c, i) =>
+    `<button data-p="${c.p}"><span class="num">${i + 1}</span><span dir="auto">${esc(c.t)}</span></button>`).join("");
+  $$("#listaSumario button").forEach(b => b.onclick = () => { irPara(paginaDe(nos[b.dataset.p]), false); fecharPaineis(); });
+
+  pintarTodos();
+  if (document.fonts) await document.fonts.ready;
+  if (livro?.id !== id) return;
+  medir();
+  const salvo = progresso[id];
+  let p = 0;
+  if (posicao === 0) p = 0;
+  else if (salvo?.i !== undefined && nos[salvo.i]) p = paginaDe(nos[salvo.i]) + (salvo.o || 0);
+  else if (salvo?.f) p = Math.round(salvo.f * (totalPaginas - 1));
+  irPara(p, false);
+  atualizarProgressoTraducao();
+}
+
+function medir() {
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const lateral = innerWidth > 640 ? 150 : 40;   // espaço das setas de virar página
+  const col = Math.floor(Math.min(parseFloat(prefs.largura) * rem, innerWidth - lateral));
+  const gap = 64;
+  document.documentElement.style.setProperty("--col", col + "px");
+  document.documentElement.style.setProperty("--gap", gap + "px");
+  passo = col + gap;
+  const fim = $("#texto .fim");
+  totalPaginas = fim ? paginaDe(fim) + 1 : 1;
+}
+
+// página onde o elemento começa (vale com ou sem o deslocamento aplicado, porque é relativo ao texto)
+function paginaDe(el) {
+  return Math.max(0, Math.floor((el.getBoundingClientRect().left - $("#texto").getBoundingClientRect().left + 2) / passo));
+}
+
+// último parágrafo que começa na página p ou antes (é o que está no topo da página p)
+function ancoraIdx(p) {
+  let lo = 0, hi = nos.length - 1, r = -1;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (paginaDe(nos[m]) <= p) { r = m; lo = m + 1; } else hi = m - 1; }
+  return r;
+}
+
+function irPara(p, animar = true) {
+  pagina = Math.max(0, Math.min(totalPaginas - 1, p));
+  const t = $("#texto");
+  t.classList.toggle("sem-animacao", !animar);
+  t.style.transform = `translate3d(${-pagina * passo}px, 0, 0)`;
+  if (!animar) void t.offsetWidth;
+  atualizar();
+}
+const proxima = () => pagina < totalPaginas - 1 && irPara(pagina + 1);
+const anterior = () => pagina > 0 && irPara(pagina - 1);
+
+// refaz a diagramação (letra, largura, tradução...) mantendo o mesmo trecho na tela
+function rediagramar(fn) {
+  if (!livro || !nos.length) { fn?.(); return; }
+  const i = ancoraIdx(pagina), o = i >= 0 ? pagina - paginaDe(nos[i]) : pagina;
+  fn?.();
+  medir();
+  irPara(i >= 0 ? paginaDe(nos[i]) + o : o, false);
+}
+const mudarLayout = fn => rediagramar(() => { fn(); aplicarPrefs(); });
+
+function capituloAtual() {
+  const idx = ancoraIdx(pagina);
+  let lo = 0, hi = capitulos.length - 1, r = -1;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (capitulos[m].p <= idx) { r = m; lo = m + 1; } else hi = m - 1; }
+  return r;
+}
+
+function atualizar() {
+  if (!livro || !nos.length) return;
+  const f = totalPaginas > 1 ? pagina / (totalPaginas - 1) : 1;
+  $("#progressoFino").style.width = (f * 100) + "%";
+  const c = capituloAtual();
+  $("#capituloAtual").textContent = c >= 0 ? tituloCap(capitulos[c]) : livro.titulo;
+  $("#numPagina").textContent = `Página ${pagina + 1} de ${totalPaginas}`;
+  $("#restante").textContent = pagina >= totalPaginas - 1 ? "Fim do livro" : `faltam ${duracao(livro.palavras * (1 - f))}`;
+  $("#paginaAnterior").disabled = pagina === 0;
+  $("#paginaProxima").disabled = pagina >= totalPaginas - 1;
+  clearTimeout(timerSalvar);
+  timerSalvar = setTimeout(salvarPosicao, 300);
+  traduzirPerto();
+}
+
+function salvarPosicao() {
+  if (!livro || !nos.length) return;
+  const i = Math.max(0, ancoraIdx(pagina)), c = capituloAtual();
+  progresso[livro.id] = {
+    f: totalPaginas > 1 ? pagina / (totalPaginas - 1) : 1, t: Date.now(),
+    pag: pagina, total: totalPaginas,
+    i, o: Math.max(0, pagina - paginaDe(nos[i])),   // parágrafo do topo da página: sobrevive a mudar a letra
+    ...(c >= 0 && { c: tituloCap(capitulos[c]) }),
+  };
+  guardar("progresso", progresso);
+}
+
+// ---------------------------------------------------------------- tradução
+let fila = new Set(), pedindo = false, esperarAte = 0, timerFila, traduzindoTudo = false, timerAviso;
+const tituloCap = c => (prefs.idioma !== "original" && trad[c.p]) || c.t;
+
+function avisar(msg, acao) {
+  const a = $("#aviso"); a.replaceChildren(msg);
+  if (acao) {
+    const b = document.createElement("button");
+    b.className = "aviso-acao"; b.textContent = acao.rotulo;
+    b.onclick = () => { a.hidden = true; acao.fn(); };
+    a.append(b);
+  }
+  a.hidden = false;
+  clearTimeout(timerAviso); timerAviso = setTimeout(() => a.hidden = true, acao ? 7000 : 4500);
+}
+
+function pintar(i) {
+  const el = nos[i]; if (!el) return;
+  const orig = originais[i].replace(/^#/, ""), t = trad[i];
+  el.classList.toggle("pendente", prefs.idioma !== "original" && t === undefined);
+  if (prefs.idioma === "original" || t === undefined) el.textContent = orig;
+  else if (prefs.idioma === "pt") el.textContent = t;
+  else el.innerHTML = `${esc(t)}<span class="orig" lang="en">${esc(orig)}</span>`;
+}
+
+function pintarTodos() {
+  $("#texto").classList.toggle("bilingue", prefs.idioma === "ambos");
+  $("#abrirTraducao").classList.toggle("ativo", prefs.idioma !== "original");
+  if (prefs.idioma === "original" && !Object.keys(trad).length) return;
+  for (let k = 0; k < nos.length; k++) pintar(k);
+}
+
+// pede a tradução da página atual e das vizinhas
+function traduzirPerto() {
+  if (prefs.idioma === "original" || !nos.length) return;
+  const a = Math.max(0, ancoraIdx(pagina - 1)), b = Math.max(a, ancoraIdx(pagina + 3));
+  for (let i = a; i <= b + 1 && i < nos.length; i++) if (trad[i] === undefined) fila.add(i);
+  if (!fila.size) return;
+  clearTimeout(timerFila); timerFila = setTimeout(pedirFila, 80);
+}
+
+async function pedirServidor(id, indices) {
+  let r;
+  try {
+    r = await fetch("/api/traduzir", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, indices }) });
+  } catch { throw new Error("O leitor está fechado — abra o “Abrir Leitor.bat” de novo"); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.erro || "Falha na tradução");
+  return j.traducoes;
+}
+
+function receber(traducoes) {
+  rediagramar(() => {
+    for (const [i, t] of Object.entries(traducoes)) {
+      trad[i] = t;
+      if (prefs.idioma !== "original") pintar(+i);
+    }
+  });
+  atualizarProgressoTraducao();
+}
+
+async function pedirFila() {
+  if (pedindo || !fila.size || !livro || Date.now() < esperarAte) return;
+  pedindo = true;
+  const id = livro.id, centro = Math.max(0, ancoraIdx(pagina));
+  const lote = [...fila].sort((a, b) => Math.abs(a - centro) - Math.abs(b - centro)).slice(0, 50).sort((a, b) => a - b);
+  lote.forEach(i => fila.delete(i));
+  try {
+    const traducoes = await pedirServidor(id, lote);
+    if (livro?.id === id) receber(traducoes);
+  } catch (e) {
+    if (livro?.id === id) {
+      lote.forEach(i => trad[i] === undefined && fila.add(i));
+      esperarAte = Date.now() + 8000;
+      avisar(e.message + " · tentando de novo em instantes");
+      setTimeout(pedirFila, 8200);
+    }
+  } finally {
+    pedindo = false;
+    if (fila.size && livro?.id === id) pedirFila();
+  }
+}
+
+function atualizarProgressoTraducao() {
+  const total = originais.length || 1, feitos = Object.keys(trad).length;
+  const p = Math.min(100, Math.round(feitos / total * 100));
+  $("#barraTraducao").style.width = p + "%";
+  $("#pctTraducao").textContent = p + "%";
+  const b = $("#traduzirTudo");
+  b.disabled = feitos >= total;
+  b.textContent = feitos >= total ? "Livro todo traduzido ✓" : traduzindoTudo ? "Pausar" : feitos ? "Continuar tradução" : "Traduzir o livro todo";
+}
+
+async function traduzirTudo() {
+  if (traduzindoTudo) { traduzindoTudo = false; atualizarProgressoTraducao(); return; }
+  traduzindoTudo = true; atualizarProgressoTraducao();
+  const id = livro.id;
+  if (prefs.idioma === "original") mudarIdioma("pt");
+  while (traduzindoTudo && livro?.id === id) {
+    const faltam = [];
+    for (let i = 0; i < originais.length && faltam.length < 150; i++) if (trad[i] === undefined) faltam.push(i);
+    if (!faltam.length) break;
+    try { receber(await pedirServidor(id, faltam)); }
+    catch (e) { avisar(e.message); break; }
+  }
+  if (livro?.id === id) { traduzindoTudo = false; atualizarProgressoTraducao(); }
+}
+
+function pararTraducao() {
+  traduzindoTudo = false; fila.clear();
+  originais = []; nos = []; trad = {};
+}
+
+function mudarIdioma(valor) {
+  prefs.idioma = valor; aplicarPrefs();
+  if (livro && nos.length) rediagramar(pintarTodos);
+}
+
+// ---------------------------------------------------------------- navegação
+function voltar(viaHistorico) {
+  salvarPosicao();
+  fecharPaineis();
+  pararTraducao();
+  livro = null;
+  document.title = "Estante de Mistério";
+  if (viaHistorico !== true) history.pushState(null, "", location.pathname + (abaAtual === "lendo" ? "#lendo" : ""));
+  $("#leitura").hidden = true; $("#biblioteca").hidden = false;
+  desenharBiblioteca();
+  scrollTo(0, 0);
+}
+
+function abrirPainel(painel, transparente) {
+  fecharPaineis();
+  $(painel).hidden = false;
+  $("#veu").hidden = false; $("#veu").classList.toggle("transparente", !!transparente);
+  $("#leitura").classList.remove("imersivo");
+}
+function fecharPaineis() { ["#ajustes", "#painelTraducao", "#sumario", "#veu"].forEach(s => $(s).hidden = true); }
+function abrirSumario() {
+  if (!capitulos.length) return;
+  abrirPainel("#sumario");
+  const atual = capituloAtual();
+  $$("#listaSumario button").forEach((b, i) => {
+    b.classList.toggle("atual", i === atual);
+    b.lastElementChild.textContent = tituloCap(capitulos[i]);
+  });
+  $$("#listaSumario button")[Math.max(0, atual)]?.scrollIntoView({ block: "center" });
+}
+
+// ---------------------------------------------------------------- eventos
+$("#busca").addEventListener("input", () => { if (abaAtual !== "biblioteca") mostrarAba("biblioteca"); desenharGrade(); $("#destaque").hidden = !!$("#busca").value.trim(); });
+$("#ordem").onchange = e => mudarFiltro("ordem", e.target.value);
+$("#mostrarTrechos").onchange = e => mudarFiltro("rascunhos", e.target.checked);
+$$("#chipsTipo .chip").forEach(b => b.onclick = () => mudarFiltro("tipo", b.dataset.valor));
+$$("#chipsDuracao .chip").forEach(b => b.onclick = () => mudarFiltro("duracao", b.dataset.valor));
+$("#grade").addEventListener("click", e => { const b = e.target.closest(".livro"); if (b) mostrarDetalhe(b.dataset.id); });
+$$("button[data-tema]").forEach(b => b.onclick = () => { prefs.tema = b.dataset.tema; aplicarPrefs(); });
+
+$("#voltar").onclick = () => voltar();
+$$(".aba").forEach(b => b.onclick = () => mostrarAba(b.dataset.aba));
+$("#abrirSumario").onclick = abrirSumario;
+$("#fecharSumario").onclick = fecharPaineis;
+$("#abrirTraducao").onclick = () => $("#painelTraducao").hidden ? abrirPainel("#painelTraducao", true) : fecharPaineis();
+$$("#segIdioma button").forEach(b => b.onclick = () => mudarIdioma(b.dataset.valor));
+$("#traduzirTudo").onclick = traduzirTudo;
+$("#abrirAjustes").onclick = () => $("#ajustes").hidden ? abrirPainel("#ajustes", true) : fecharPaineis();
+$("#veu").onclick = fecharPaineis;
+$("#tamanho").onchange = e => mudarLayout(() => prefs.tam = +e.target.value);
+$$("#segFonte button").forEach(b => b.onclick = () => mudarLayout(() => prefs.fonte = b.dataset.valor));
+$$("#segEntrelinha button").forEach(b => b.onclick = () => mudarLayout(() => prefs.entrelinha = b.dataset.valor));
+$$("#segLargura button").forEach(b => b.onclick = () => mudarLayout(() => prefs.largura = b.dataset.valor));
+
+// virar a página: setas, clique nas laterais, deslizar o dedo, roda do mouse e teclado
+$("#paginaAnterior").onclick = anterior;
+$("#paginaProxima").onclick = proxima;
+$("#palco").addEventListener("click", e => {
+  if (getSelection().toString() || e.target.closest("button")) return;
+  const r = $("#palco").getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
+  if (x < .3) anterior(); else if (x > .7) proxima(); else $("#leitura").classList.toggle("imersivo");
+});
+let toque = null;
+$("#palco").addEventListener("touchstart", e => { const t = e.touches[0]; toque = { x: t.clientX, y: t.clientY }; }, { passive: true });
+$("#palco").addEventListener("touchend", e => {
+  if (!toque) return;
+  const t = e.changedTouches[0], dx = t.clientX - toque.x, dy = t.clientY - toque.y;
+  toque = null;
+  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); dx < 0 ? proxima() : anterior(); }
+}, { passive: false });
+let roda = 0, rodaAte = 0;
+$("#leitura").addEventListener("wheel", e => {
+  e.preventDefault();
+  if (Date.now() < rodaAte) return;
+  roda += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (Math.abs(roda) > 40) { roda > 0 ? proxima() : anterior(); roda = 0; rodaAte = Date.now() + 420; }
+}, { passive: false });
+
+addEventListener("scroll", () => $("#topo").classList.toggle("rolou", scrollY > 8), { passive: true });
+let timerResize;
+addEventListener("resize", () => { if (livro) { clearTimeout(timerResize); timerResize = setTimeout(() => rediagramar(), 150); } });
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" && e.key !== "Escape") return;
+  if (!livro) {
+    if (e.key === "/") { e.preventDefault(); $("#busca").focus(); }
+    if (e.key === "Escape" && document.activeElement === $("#busca")) { $("#busca").value = ""; $("#busca").blur(); desenharBiblioteca(); }
+    return;
+  }
+  if (e.key === "Escape") { $("#veu").hidden ? voltar() : fecharPaineis(); return; }
+  if (!$("#veu").hidden) return;
+  const k = e.key;
+  if (k === "ArrowRight" || k === "PageDown" || (k === " " && !e.shiftKey)) { e.preventDefault(); proxima(); }
+  else if (k === "ArrowLeft" || k === "PageUp" || (k === " " && e.shiftKey)) { e.preventDefault(); anterior(); }
+  else if (k === "Home") irPara(0);
+  else if (k === "End") irPara(totalPaginas - 1);
+  else if (k.toLowerCase() === "t") mudarIdioma(prefs.idioma === "original" ? "pt" : "original");
+  else if (k === "+" || k === "=") mudarLayout(() => prefs.tam = Math.min(28, prefs.tam + 1));
+  else if (k === "-") mudarLayout(() => prefs.tam = Math.max(15, prefs.tam - 1));
+  else if (k.toLowerCase() === "c") abrirSumario();
+});
+addEventListener("popstate", () => {
+  const m = location.hash.match(/^#livro-(\d+)/);
+  if (m) return abrir(m[1]);
+  abaAtual = location.hash === "#lendo" ? "lendo" : "biblioteca";
+  if (livro) voltar(true); else mostrarAba(abaAtual, false);
+});
+addEventListener("pagehide", salvarPosicao);
+
+(async () => {
+  aplicarPrefs();
+  catalogo = await (await fetch("dados/catalogo.json", { cache: "no-store" })).json();
+  porId = Object.fromEntries(catalogo.map(b => [b.id, b]));
+  mostrarAba(location.hash === "#lendo" ? "lendo" : "biblioteca", false);
+  const m = location.hash.match(/^#livro-(\d+)/);
+  if (m) abrir(m[1]);
+})();
+</script>
+</body>
+</html>
