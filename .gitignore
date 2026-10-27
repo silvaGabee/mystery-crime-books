@@ -1,1 +1,14 @@
-__pycache__
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Gerado pelo leitor.py
+*.tmp
+
+# Sistema / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
